@@ -13,6 +13,20 @@ NoteSpace is a full-stack note and task management web application designed to h
 - Responsive beige/cream user interface
 - Persistent data storage using SQLite
 
+## Screenshots
+
+### Home Dashboard
+
+![Home Dashboard](screenshots/Home.png)
+
+### Notes
+
+![Notes Page](screenshots/Notes.png)
+
+### To-Do List
+
+![To-Do Page](screenshots/Todo.png)
+
 ## Tech Stack
 
 ### Frontend
