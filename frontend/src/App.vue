@@ -44,12 +44,29 @@ const editTodoDueDate = ref("");
 const updatingTodo = ref(false);
 const editTodoError = ref("");
 
+const todoSearch = ref("");
+
+const filteredTodos = computed(() => {
+  const keyword = todoSearch.value
+    .trim()
+    .toLowerCase();
+
+  if (!keyword) {
+    return todos.value;
+  }
+
+  return todos.value.filter((todo) =>
+    todo.title.toLowerCase().includes(keyword)
+  );
+});
+
 /*NOTES STATE*/
 
 const notes = ref([]);
 const loading = ref(true);
 const error = ref("");
 const search = ref("");
+const folderSearch = ref("");
 
 /*CREATE NOTE STATE*/
 
@@ -933,6 +950,47 @@ const completedTasks = computed(() => {
   ).length;
 });
 
+const selectedFolderInfo = computed(() => {
+  return folders.value.find(
+    folder => Number(folder.id) === Number(selectedFolder.value)
+  );
+});
+
+const folderNotes = computed(() => {
+  const keyword = folderSearch.value
+    .trim()
+    .toLowerCase();
+
+  return notes.value.filter((note) => {
+    const belongsToFolder =
+      Number(note.folder_id) === Number(selectedFolder.value);
+
+    const matchesSearch =
+      !keyword ||
+      note.title.toLowerCase().includes(keyword) ||
+      note.content.toLowerCase().includes(keyword);
+
+    return belongsToFolder && matchesSearch;
+  });
+});
+
+const folderTodos = computed(() => {
+  const keyword = folderSearch.value
+    .trim()
+    .toLowerCase();
+
+  return todos.value.filter((todo) => {
+    const belongsToFolder =
+      Number(todo.folder_id) === Number(selectedFolder.value);
+
+    const matchesSearch =
+      !keyword ||
+      todo.title.toLowerCase().includes(keyword);
+
+    return belongsToFolder && matchesSearch;
+  });
+});
+
 /* INITIAL LOAD*/
 
 onMounted(() => {
@@ -1053,7 +1111,7 @@ onMounted(() => {
               class="folder-main"
               @click="
                 selectedFolder = folder.id;
-                activePage = 'notes';
+                activePage = 'folder';
               "
             >
               <span class="folder-icon">
@@ -1538,6 +1596,228 @@ onMounted(() => {
         </section>
 
       </main>
+      <!-- Folder Page -->
+
+      <main
+        v-if="activePage === 'folder'"
+        class="page"
+      >
+        <div class="page-header">
+          <div>
+            <p class="eyebrow">
+              FOLDER
+            </p>
+
+            <h1>
+              {{ selectedFolderInfo?.name || "Folder" }}
+            </h1>
+
+            <p class="page-description">
+              Your notes and tasks in one place.
+            </p>
+          </div>
+        </div>
+
+        <!-- Folder Search -->
+        <section class="toolbar">
+
+          <div class="search-box">
+
+            <span>
+              ⌕
+            </span>
+
+            <input
+              v-model="folderSearch"
+              type="text"
+              :placeholder="`Search in ${selectedFolderInfo?.name || 'folder'}...`"
+            />
+
+          </div>
+
+          <div class="note-count">
+            {{ folderNotes.length + folderTodos.length }}
+
+            {{
+              folderNotes.length + folderTodos.length === 1
+                ? "item"
+                : "items"
+            }}
+          </div>
+
+        </section>
+
+        <!-- NOTES -->
+
+        <section class="folder-section">
+
+          <div class="folder-section-header">
+            <div>
+              <p class="eyebrow">NOTES</p>
+              <h2>Notes</h2>
+            </div>
+
+            <button
+              class="folder-add-button"
+              @click="
+                newFolderId = selectedFolder;
+                showModal = true;
+              "
+            >
+              + New Note
+            </button>
+          </div>
+
+
+          <div
+            v-if="folderNotes.length === 0"
+            class="folder-empty"
+          >
+            {{
+              folderSearch.trim()
+                ? "No matching notes found."
+                : "No notes in this folder yet."
+            }}
+          </div>
+
+
+          <div
+            v-else
+            class="notes-grid"
+          >
+            <article
+              v-for="note in folderNotes"
+              :key="note.id"
+              class="note-card"
+            >
+              <div class="note-content">
+                <h2>{{ note.title }}</h2>
+                <p>{{ note.content }}</p>
+              </div>
+
+              <div class="note-footer">
+                <span class="date">
+                  {{ formatDate(note.updated_at) }}
+                </span>
+
+                <div class="actions">
+                  <button
+                    class="icon-button"
+                    @click="openEditModal(note)"
+                  >
+                    ✎
+                  </button>
+
+                  <button
+                    class="icon-button delete"
+                    @click="openDeleteModal(note)"
+                  >
+                    🗑
+                  </button>
+                </div>
+              </div>
+            </article>
+          </div>
+
+        </section>
+
+
+        <!-- TO-DOS -->
+
+        <section class="folder-section">
+
+          <div class="folder-section-header">
+            <div>
+              <p class="eyebrow">TASKS</p>
+              <h2>To-Do</h2>
+            </div>
+
+            <button
+              class="folder-add-button"
+              @click="
+                newTodoFolderId = selectedFolder;
+                showTodoModal = true;
+              "
+            >
+              + New Task
+            </button>
+          </div>
+
+
+          <div
+            v-if="folderTodos.length === 0"
+            class="folder-empty"
+          >
+            No tasks in this folder yet.
+          </div>
+
+
+          <div
+            v-else
+            class="todo-list"
+          >
+            <article
+              v-for="todo in folderTodos"
+              :key="todo.id"
+              class="todo-item"
+              :class="{
+                completed: todo.completed,
+                pinned: Number(todo.pinned) === 1
+              }"
+            >
+
+              <button
+                class="todo-check"
+                :class="{ checked: todo.completed }"
+                @click="toggleTodo(todo)"
+              >
+                {{ todo.completed ? "✓" : "" }}
+              </button>
+
+
+              <div class="todo-details">
+                <h3>{{ todo.title }}</h3>
+
+                <div class="todo-meta">
+                  <span v-if="todo.due_date">
+                    Due {{ formatTodoDate(todo.due_date) }}
+                  </span>
+                </div>
+              </div>
+
+
+              <div class="todo-actions">
+
+                <button
+                  class="todo-pin"
+                  :class="{ pinned: Boolean(todo.pinned) }"
+                  @click="togglePinTodo(todo)"
+                >
+                  {{ Boolean(todo.pinned) ? "📌" : "♡" }}
+                </button>
+
+                <button
+                  class="todo-edit"
+                  @click="openEditTodoModal(todo)"
+                >
+                  ✎
+                </button>
+
+                <button
+                  class="todo-delete"
+                  @click="deleteTodo(todo)"
+                >
+                  🗑
+                </button>
+
+              </div>
+
+            </article>
+          </div>
+
+        </section>
+
+      </main>
 
 
       <!-- Notes Page-->
@@ -1796,6 +2076,24 @@ onMounted(() => {
           </button>
 
         </div>
+        <!-- To-Do Search -->
+
+        <section class="toolbar">
+          <div class="search-box">
+            <span>⌕</span>
+
+            <input
+              v-model="todoSearch"
+              type="text"
+              placeholder="Search tasks..."
+            />
+          </div>
+
+          <div class="note-count">
+            {{ filteredTodos.length }}
+            {{ filteredTodos.length === 1 ? "task" : "tasks" }}
+          </div>
+        </section>
 
 
         <!-- Loading -->
@@ -1840,6 +2138,24 @@ onMounted(() => {
 
         </section>
 
+        <!-- No Search Results -->
+        <section
+          v-else-if="filteredTodos.length === 0"
+          class="todo-placeholder"
+        >
+          <div class="todo-placeholder-icon">
+            🔍
+          </div>
+
+          <h2>
+            No tasks found
+          </h2>
+
+          <p>
+            Try searching for something else.
+          </p>
+        </section>
+
 
         <!-- Task List -->
 
@@ -1849,7 +2165,7 @@ onMounted(() => {
         >
 
           <article
-            v-for="todo in todos"
+            v-for="todo in filteredTodos"
             :key="todo.id"
             class="todo-item"
             :class="{
@@ -1898,15 +2214,15 @@ onMounted(() => {
 
               <button
                 class="todo-pin"
-                :class="{ pinned: Boolean(todo.pinned) }"
+                :class="{ pinned: Number(todo.pinned) === 1 }"
                 :title="
-                  Boolean(todo.pinned)
+                  Number(todo.pinned) === 1
                     ? 'Unpin task'
                     : 'Pin task'
                 "
                 @click="togglePinTodo(todo)"
               >
-                {{ Boolean(todo.pinned) ? "📌" : "♡" }}
+                📌
               </button>
 
 
