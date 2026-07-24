@@ -1,5 +1,7 @@
 <script setup>
 import { ref, computed, onMounted } from "vue";
+const API_URL =
+  import.meta.env.VITE_API_URL || "http://localhost:3000";
 
 /* GENERAL STATE*/
 
@@ -83,7 +85,7 @@ const fetchTodos = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/api/todos"
+      `${API_URL}/api/todos`
     );
 
     if (!response.ok) {
@@ -115,7 +117,7 @@ const fetchTodos = async () => {
 const fetchFolders = async () => {
   try {
     const response = await fetch(
-      "http://localhost:3000/api/folders"
+      `${API_URL}/api/folders`
     );
 
     if (!response.ok) {
@@ -135,7 +137,7 @@ const fetchNotes = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/api/notes"
+      `${API_URL}/api/notes`
     );
 
     if (!response.ok) {
@@ -200,7 +202,7 @@ const updateTodo = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/todos/${editingTodo.value.id}`,
+      `${API_URL}/api/todos/${editingTodo.value.id}`,
       {
         method: "PUT",
 
@@ -292,7 +294,7 @@ const createNote = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/api/notes",
+      `${API_URL}/api/notes`,
       {
         method: "POST",
 
@@ -365,7 +367,7 @@ const updateNote = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/notes/${editingNote.value.id}`,
+      `${API_URL}/api/notes/${editingNote.value.id}`,
       {
         method: "PUT",
 
@@ -420,7 +422,7 @@ const deleteNote = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/notes/${noteToDelete.value.id}`,
+      `${API_URL}/api/notes/${noteToDelete.value.id}`,
       {
         method: "DELETE"
       }
@@ -455,7 +457,7 @@ const createFolder = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/api/folders",
+      `${API_URL}/api/folders`,
       {
         method: "POST",
 
@@ -500,7 +502,7 @@ const createTodo = async () => {
 
   try {
     const response = await fetch(
-      "http://localhost:3000/api/todos",
+      `${API_URL}/api/todos`,
       {
         method: "POST",
 
@@ -569,7 +571,7 @@ const formatTodoDate = (date) => {
 const toggleTodo = async (todo) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/todos/${todo.id}`,
+      `${API_URL}/api/todos/${todo.id}`,
       {
         method: "PUT",
 
@@ -608,7 +610,7 @@ const toggleTodo = async (todo) => {
 const togglePinTodo = async (todo) => {
   try {
     const response = await fetch(
-      `http://localhost:3000/api/todos/${todo.id}/pin`,
+      `${API_URL}/api/todos/${todo.id}/pin`,
       {
         method: "PATCH",
 
@@ -646,7 +648,7 @@ const deleteTodo = async (todo) => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/todos/${todo.id}`,
+      `${API_URL}/api/todos/${todo.id}`,
       {
         method: "DELETE"
       }
@@ -831,7 +833,7 @@ const updateFolder = async () => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/folders/${editingFolder.value.id}`,
+      `${API_URL}/api/folders/${editingFolder.value.id}`,
       {
         method: "PUT",
 
@@ -875,7 +877,7 @@ const deleteFolder = async (folder) => {
 
   try {
     const response = await fetch(
-      `http://localhost:3000/api/folders/${folder.id}`,
+      `${API_URL}/api/folders/${folder.id}`,
       {
         method: "DELETE"
       }
@@ -1205,9 +1207,15 @@ onMounted(() => {
 
               <button
                 class="todo-checkbox"
+                :class="{ checked: Number(todo.completed) === 1 }"
                 @click="toggleTodo(todo)"
+                :title="
+                  Number(todo.completed) === 1
+                    ? 'Mark as incomplete'
+                    : 'Mark as complete'
+                "
               >
-                ○
+                <span v-if="Number(todo.completed) === 1">✓</span>
               </button>
 
 
