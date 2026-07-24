@@ -6,6 +6,6 @@ export default defineConfig({
   plugins: [vue()],
 
   preview: {
-    allowedHosts : ['outstanding-surprise-production-f135.up.railway.app']
+    allowedHosts : ['notespaces.up.railway.app']
   }
 })
