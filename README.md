@@ -2,6 +2,11 @@
 
 NoteSpace is a full-stack note and task management web application designed to help users organize their notes, to-do lists, folders, and daily activities in one place.
 
+## 🌐 Live Demo
+
+https://notespaces.up.railway.app
+
+
 ## Features
 
 - Create, edit, and delete notes
