@@ -1115,7 +1115,7 @@ onMounted(() => {
               "
             >
               <span class="folder-icon">
-                ♡
+                📌
               </span>
 
               <span class="folder-name">
@@ -1793,7 +1793,7 @@ onMounted(() => {
                   :class="{ pinned: Boolean(todo.pinned) }"
                   @click="togglePinTodo(todo)"
                 >
-                  {{ Boolean(todo.pinned) ? "📌" : "♡" }}
+                  📌
                 </button>
 
                 <button
