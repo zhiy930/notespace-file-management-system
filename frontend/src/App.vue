@@ -1115,7 +1115,7 @@ onMounted(() => {
               "
             >
               <span class="folder-icon">
-                📌
+                📁
               </span>
 
               <span class="folder-name">
@@ -1262,20 +1262,6 @@ onMounted(() => {
               :key="todo.id"
               class="home-pinned-task"
             >
-
-              <button
-                class="todo-checkbox"
-                :class="{ checked: Number(todo.completed) === 1 }"
-                @click="toggleTodo(todo)"
-                :title="
-                  Number(todo.completed) === 1
-                    ? 'Mark as incomplete'
-                    : 'Mark as complete'
-                "
-              >
-                <span v-if="Number(todo.completed) === 1">✓</span>
-              </button>
-
 
               <div class="home-pinned-content">
 
@@ -1761,17 +1747,22 @@ onMounted(() => {
               :key="todo.id"
               class="todo-item"
               :class="{
-                completed: todo.completed,
+                completed:Number (todo.completed) === 1,
                 pinned: Number(todo.pinned) === 1
               }"
             >
 
               <button
-                class="todo-check"
-                :class="{ checked: todo.completed }"
+                class="todo-page-checkbox"
+                :class="{ checked: Number(todo.completed) === 1 }"
                 @click="toggleTodo(todo)"
+                :title="
+                  Number(todo.completed) === 1
+                    ? 'Mark as incomplete'
+                    : 'Mark as complete'
+                "
               >
-                {{ todo.completed ? "✓" : "" }}
+                <span v-if="Number(todo.completed) === 1">✓</span>
               </button>
 
 

@@ -1179,7 +1179,7 @@ button {
 
 /* To-Do Checkbox */
 
-.todo-checkbox {
+.todo-check {
   width: 24px;
   height: 24px;
 
@@ -1193,7 +1193,7 @@ button {
 
   background: #fffdf9;
 
-  border: 1.5px solid #c9b69f;
+  border: 1px solid #c9b69f;
   border-radius: 50%;
 
   color: white;
@@ -1217,6 +1217,59 @@ button {
 .todo-check.checked {
   border-color: var(--primary);
   background: var(--primary);
+}
+
+/* TO-DO PAGE CHECKBOX */
+
+.todo-page-checkbox {
+  width: 25px;
+  height: 25px;
+  min-width: 25px;
+
+  flex-shrink: 0;
+
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 0;
+
+  /* Strong visible empty circle */
+  background: #ffffff;
+  border: 2px solid #8f7254;
+  border-radius: 50%;
+
+  color: white;
+
+  font-size: 14px;
+  font-weight: 700;
+
+  cursor: pointer;
+
+  box-shadow: 0 1px 3px rgba(80, 55, 35, 0.12);
+
+  transition: all 0.2s ease;
+}
+
+.todo-page-checkbox:hover {
+  background: #eee3d6;
+  border-color: #654a32;
+
+  transform: scale(1.1);
+
+  box-shadow: 0 2px 6px rgba(80, 55, 35, 0.18);
+}
+
+/* Completed */
+.todo-page-checkbox.checked {
+  background: #8f7254;
+  border-color: #8f7254;
+  color: #ffffff;
+}
+
+.todo-page-checkbox.checked:hover {
+  background: #765a40;
+  border-color: #765a40;
 }
 
 .todo-details {
